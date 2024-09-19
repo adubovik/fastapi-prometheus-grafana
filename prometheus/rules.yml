@@ -1,0 +1,16 @@
+groups:
+  - name: http_status_code_rate
+    rules:
+      - record: http_status_code_rate
+        expr: sum by (status) (rate(http_requests_total[1m]))
+
+  - name: AlertRules
+    rules:
+      - alert: High4xxErrorRate
+        expr: http_status_code_rate{status=~"4.."} > 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: High rate of 4xx HTTP responses
+          description: "The rate of HTTP 4xx responses is greater than 1 requests per second for more than 1 minute."
